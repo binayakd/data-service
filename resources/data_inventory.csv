@@ -1,0 +1,12 @@
+data_id,column_name,data_type,nullable
+pnl_statement,date,DATE,FALSE
+pnl_statement,revenue,DECIMAL,FALSE
+pnl_statement,cogs,DECIMAL,FALSE
+pnl_statement,operating_expenses,DECIMAL,FALSE
+pnl_statement,marketing_expenses,DECIMAL,FALSE
+pnl_statement,depreciation,DECIMAL,FALSE
+pnl_statement,interest,DECIMAL,FALSE
+pnl_statement,taxes,DECIMAL,FALSE
+pnl_statement,employee_count,INTEGER,TRUE
+pnl_statement,transactions,INTEGER,TRUE
+pnl_statement,new_customers,INTEGER,TRUE

@@ -1,0 +1,23 @@
+from typing import List
+
+import polars as pl
+import strawberry
+
+from generated.providers.{{ data.data_id }}.dto import {{ data.type_name }}
+
+
+# Fetcher for {{ data.type_name }}
+@strawberry.field
+def get_{{ data.data_id }}_by_version_id(versionId: int) -> List[{{ data.type_name }}]:
+    df = pl.read_csv('data/{{ data.data_id }}.csv')  # replace with actual data source
+    df = df.filter(pl.col("version_id") == versionId)
+    records = df.to_dicts()
+    result = []
+    for row in records:
+        result.append({{ data.type_name }}(
+        {%- for col in data.columns %}
+            {{ col }}=row.get('{{ col }}'){% if not loop.last %}, {% endif %}
+        {%- endfor %}
+        ))
+    return result
+
