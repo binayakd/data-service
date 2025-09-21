@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from strawberry.fastapi import GraphQLRouter
-from generated.query import schema
+from src.generated.query import schema
 import uvicorn
 
 graphql_app = GraphQLRouter(schema)

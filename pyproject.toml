@@ -10,3 +10,19 @@ dependencies = [
     "strawberry-graphql[cli]>=0.282.0",
     "uvicorn>=0.36.0",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "pytest-mypy>=1.0.1",
+    "pytest-mypy-plugins>=3.2.0",
+]
+
+[tool.pytest.ini_options]
+addopts = "--mypy --mypy-ignore-missing-imports"
+
+[tool.mypy]
+plugins = ["strawberry.ext.mypy_plugin"]
+ignore_missing_imports = "True"
+explicit_package_bases = "True"
+namespace_packages  = "True"

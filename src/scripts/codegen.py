@@ -4,14 +4,14 @@ from pathlib import Path
 from jinja2 import Template
 
 # -------- CONFIG --------
-DATA_INVENTORY_CSV = "resources/data_inventory.csv"
+DATA_INVENTORY_CSV = "src/resources/data_inventory.csv"
+FEACHER_TEMPLATE_FILE = "src/resources/templates/fetcher_template.jinja"
+QUERY_TEMPLATE_FILE = "src/resources/templates/query_template.jinja"
 
-TYPES_SCHEMA_DIR = "generated/schema/types"
-QUERY_SCHEMA_FILE = "generated/schema/query.graphql"
-QUERY_FUNCTION_FILE = "generated/query.py"
+PROVIDER_DIR = "src/generated/providers"
+TYPES_SCHEMA_DIR = "src/generated/schema/types"
+QUERY_FUNCTION_FILE = "src/generated/query.py"
 
-FEACHER_TEMPLATE_FILE = "scripts/templates/fetcher_template.jinja"
-QUERY_TEMPLATE_FILE = "scripts/templates/query_template.jinja"
 
 # mapping from inventory types to GraphQL scalar
 GRAPHQL_TYPE_MAP = {
@@ -39,22 +39,8 @@ def generate_type_sdl_from_inventory(data_id: str, data_id_inventory_df: pl.Data
 
 def generate_data_id_graphql_dto(data_id: str, data_id_type_schema_path: str):
     # generate type code
-    graphql_dto_path = f"generated/providers/{data_id}/dto.py"
+    graphql_dto_path = f"{PROVIDER_DIR}/{data_id}/dto.py"
     run_strawberry_codegen(data_id_type_schema_path, graphql_dto_path)
-
-
-def generate_query_fields(query_fields: list[str], type_name: str):
-    # add all the queries for each data id
-    query_fields.append(f"  get{type_name}ByVersionId(versionId: String!): [{type_name}!]!")
-
-
-def write_query_schema(query_fields):
-    path = Path(QUERY_SCHEMA_FILE)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    query_def = "type Query {\n" + "\n".join(query_fields) + "\n}"
-    path.write_text(query_def)
-
-    return path.as_posix()
 
 
 def run_strawberry_codegen(sdl_path: str, output_file: str):
@@ -81,7 +67,7 @@ def generate_fetcher(data_id: str, type_name: str, data_id_inventory_df: pl.Data
 
     # render template
     rendered = template.render(data=data)
-    path = Path(f"generated/providers/{data_id}/fetcher.py")
+    path = Path(f"{PROVIDER_DIR}/{data_id}/fetcher.py")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(rendered)
 
@@ -102,8 +88,6 @@ def main():
     # get unique set of data_ids
     data_id_list = df["data_id"].unique().to_list()
 
-    query_fields = []
-
     # iterate over data ids
     for data_id in data_id_list:
         type_name = "".join([part.capitalize() for part in data_id.split("_")])
@@ -117,9 +101,6 @@ def main():
 
         # generate fetchers
         generate_fetcher(data_id, type_name, data_id_inventory_df)
-
-        # add the queries for this data id
-        generate_query_fields(query_fields, type_name)
 
 
     # generate code for query

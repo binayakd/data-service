@@ -1,7 +1,7 @@
 import strawberry
 from strawberry.tools import create_type
 {% for data_id in data_id_list %}
-from generated.providers.{{ data_id }}.fetcher import get_{{ data_id }}_by_version_id
+from src.generated.providers.{{ data_id }}.fetcher import get_{{ data_id }}_by_version_id
 {%- endfor %}
 
 
